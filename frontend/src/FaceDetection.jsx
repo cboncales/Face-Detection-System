@@ -4,9 +4,14 @@ import axios from "axios";
 const FaceDetection = () => {
   const [selectedFile, setSelectedFile] = useState(null);
   const [imageUrl, setImageUrl] = useState("");
+  const [detectionType, setDetectionType] = useState("face"); // Default to face
 
   const handleFileChange = (event) => {
     setSelectedFile(event.target.files[0]);
+  };
+
+  const handleDetectionChange = (event) => {
+    setDetectionType(event.target.value);
   };
 
   const handleUpload = async () => {
@@ -17,6 +22,7 @@ const FaceDetection = () => {
 
     const formData = new FormData();
     formData.append("file", selectedFile);
+    formData.append("detection_type", detectionType); // Send user selection
 
     try {
       const response = await axios.post(
@@ -43,20 +49,30 @@ const FaceDetection = () => {
         <input
           type="file"
           onChange={handleFileChange}
-          className="block w-full text-sm text-gray-500 
-                 file:mr-4 file:py-2 file:px-4 
-                 file:rounded-lg file:border-0 
-                 file:text-sm file:font-semibold 
-                 file:bg-blue-500 file:text-white 
-                 hover:file:bg-blue-600 cursor-pointer"
+          className="block w-full text-sm text-gray-500 file:mr-4 file:py-2 file:px-4 
+                     file:rounded-lg file:border-0 file:text-sm file:font-semibold 
+                     file:bg-blue-500 file:text-white hover:file:bg-blue-600 cursor-pointer"
         />
+
+        {/* Detection Type Dropdown */}
+        <select
+          value={detectionType}
+          onChange={handleDetectionChange}
+          className="w-full border rounded-lg p-2 bg-white shadow-sm text-gray-700"
+        >
+          <option value="face">Face</option>
+          <option value="eyes">Eyes</option>
+          <option value="mouth">Mouth</option>
+          <option value="fullbody">Full Body</option>
+          <option value="upperbody">Upper Body</option>
+        </select>
 
         <button
           onClick={handleUpload}
           className="w-full bg-blue-500 text-white py-2 px-4 rounded-lg font-medium 
-                 hover:bg-blue-600 transition duration-300"
+                     hover:bg-blue-600 transition duration-300"
         >
-          Upload & Detect Faces
+          Upload & Detect
         </button>
       </div>
 
