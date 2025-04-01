@@ -63,6 +63,7 @@ const FaceDetection = () => {
           <option value="face">Face</option>
           <option value="eyes">Eyes</option>
           <option value="mouth">Mouth</option>
+          <option value="full_face">Face, Eyes, and Mouth</option>
           <option value="fullbody">Full Body</option>
           <option value="upperbody">Upper Body</option>
         </select>

@@ -88,6 +88,40 @@ def detect_mouth(img):
 
     return img
 
+def detect_full_face(img):
+    """Detect face, eyes, and mouth, and draw rectangles around them."""
+    gray = cv2.cvtColor(img, cv2.COLOR_BGR2GRAY)
+
+    # Detect faces first
+    faces = face_cascade.detectMultiScale(gray, scaleFactor=1.2, minNeighbors=10, minSize=(50, 50))
+
+    if len(faces) == 0:
+        return img  # If no face is detected, return the original image
+    
+    for (fx, fy, fw, fh) in faces:
+        # Draw face rectangle
+        cv2.rectangle(img, (fx, fy), (fx + fw, fy + fh), (0, 255, 0), 2)
+
+        # Define face region of interest (ROI)
+        face_roi_gray = gray[fy:fy + fh, fx:fx + fw]
+        face_roi_color = img[fy:fy + fh, fx:fx + fw]
+
+        # Detect eyes within the face ROI
+        eyes = eye_cascade.detectMultiScale(face_roi_gray, scaleFactor=1.02, minNeighbors=3)
+        for (ex, ey, ew, eh) in eyes:
+            cv2.rectangle(face_roi_color, (ex, ey), (ex + ew, ey + eh), (255, 255, 255), 2)
+
+        # Detect mouth within the lower half of the face (avoiding false positives from the nose)
+        mouth_roi_gray = face_roi_gray[int(fh * 0.5):fh, :]  # Lower half of the face
+        mouth_roi_color = face_roi_color[int(fh * 0.5):fh, :]  
+
+        mouths = mouth_cascade.detectMultiScale(mouth_roi_gray, scaleFactor=1.3, minNeighbors=5)
+        for (mx, my, mw, mh) in mouths:
+            cv2.rectangle(mouth_roi_color, (mx, my), (mx + mw, my + mh), (0, 0, 255), 2)
+
+    return img
+
+
 
 def detect_fullbody(img):
     """Detect full body and draw rectangles around it."""
@@ -128,6 +162,7 @@ def upload_image():
         "face": detect_faces,
         "eyes": detect_eyes,
         "mouth": detect_mouth,
+        "full_face": detect_full_face,
         "fullbody": detect_fullbody,
         "upperbody": detect_upperbody,
     }
